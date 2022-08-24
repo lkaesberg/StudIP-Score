@@ -59,6 +59,9 @@ export const options = {
                 top: 10,
                 bottom: 30
             },
+            font: {
+                size: 30
+            },
             color: "white"
         },
         legend: {
