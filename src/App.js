@@ -21,8 +21,8 @@ ChartJS.register(
     Legend
 );
 const fetch = require('sync-fetch')
-const lars_data = fetch("https://studip.larskaesberg.de/logs/l.kaesberg.log").text()
-const constantin_data = fetch("https://studip.larskaesberg.de/logs/c.dalinghaus.log").text()
+const lars_data = fetch("https://gwdg.larskaesberg.de/logs/l.kaesberg.log").text()
+const constantin_data = fetch("https://gwdg.larskaesberg.de/logs/c.dalinghaus.log").text()
 
 
 export const options = {
