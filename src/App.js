@@ -37,10 +37,11 @@ function split_data(data) {
     })
 }
 
-const lars_data_array = split_data(lars_data)
-const constantin_data_array = split_data(constantin_data)
-const lars_last_value = lars_data_array[lars_data_array.length - 2]["y"]
-const constantin_last_value = constantin_data_array[constantin_data_array.length - 2]["y"]
+const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01"]
+const users_colors = [[255, 99, 132], [255, 132, 99], [99, 255, 132], [132, 99, 255]]
+const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
+const user_data_array = user_data.map(data => split_data(data))
+const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 
 
 export const options = {
@@ -117,29 +118,23 @@ export const options = {
 
 
 export const data = {
-    datasets: [
-        {
-            label: 'l.kaesberg',
-            color: "white",
-            data: lars_data_array,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-            label: 'c.dalinghaus',
-            data: constantin_data_array,
-            borderColor: 'rgb(53, 162, 235)',
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        },
-    ],
+    datasets:
+        [...Array(users.length).keys()].map(i => ({
+                label: users[i],
+                color: "white",
+                data: user_data_array[i],
+                borderColor: `rgb(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]})`,
+                backgroundColor: `rgba(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]}, 0.5)`,
+            })
+        )
+    ,
 };
 
 export function App() {
     return (
         <header className="App-header">
             <Line className="chart" options={options} data={data}/>
-            <div>Aktuell Erster: {(lars_last_value > constantin_last_value) ? "l.kaesberg" : "c.dalinghaus"}</div>
-            <div>Vorsprung: {Math.abs(lars_last_value - constantin_last_value)} Punkte</div>
+            <div>Aktuell Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)</div>
         </header>
     );
 }
