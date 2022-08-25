@@ -46,6 +46,7 @@ const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 
 export const options = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: {
         mode: 'x',
         intersect: false,
