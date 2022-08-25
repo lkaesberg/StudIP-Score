@@ -38,7 +38,8 @@ function split_data(data) {
     })
 }
 
-const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
+const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01"]
+const users_colors = [[255, 99, 132], [255, 132, 99], [99, 255, 132], [132, 99, 255]]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
 const user_data_array = user_data.map(data => split_data(data))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
@@ -129,8 +130,8 @@ export const data = {
                 label: users[i],
                 color: "white",
                 data: user_data_array[i],
-                borderColor: stc(users[i]),
-                backgroundColor: stc(users[i])+"80",
+                backgroundColor: `rgba(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]}, 0.5)`,
+                borderColor: `rgb(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]})`,
             })
         )
     ,
