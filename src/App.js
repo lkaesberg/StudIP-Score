@@ -69,6 +69,11 @@ export const options = {
             labels: {
                 color: 'white'
             }
+        },
+        tooltip: {
+            itemSort: function (a, b) {
+                return b.raw["y"] - a.raw["y"];
+            }
         }
     },
     labels: {
