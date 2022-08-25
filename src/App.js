@@ -26,8 +26,6 @@ ChartJS.register(
 );
 const stc = require('string-to-color');
 const fetch = require('sync-fetch')
-const lars_data = fetch("https://gwdg.larskaesberg.de/logs/l.kaesberg.log").text()
-const constantin_data = fetch("https://gwdg.larskaesberg.de/logs/c.dalinghaus.log").text()
 
 function split_data(data) {
     return data.split("\n").map(line => {
@@ -39,7 +37,6 @@ function split_data(data) {
 }
 
 const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
-const users_colors = [[255, 99, 132], [255, 132, 99], [99, 255, 132], [132, 99, 255]]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
 const user_data_array = user_data.map(data => split_data(data))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
