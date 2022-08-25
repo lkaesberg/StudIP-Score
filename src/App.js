@@ -28,18 +28,17 @@ const fetch = require('sync-fetch')
 const lars_data = fetch("https://gwdg.larskaesberg.de/logs/l.kaesberg.log").text()
 const constantin_data = fetch("https://gwdg.larskaesberg.de/logs/c.dalinghaus.log").text()
 
-const lars_data_array = lars_data.split("\n").map(line => {
-    const data = line.split(" ")
-    const d = new Date(0);
-    d.setUTCSeconds(data[1]);
-    return {x: d, y: data[0]}
-})
-const constantin_data_array = constantin_data.split("\n").map(line => {
-    const data = line.split(" ")
-    const d = new Date(0);
-    d.setUTCSeconds(data[1]);
-    return {x: d, y: data[0]}
-})
+function split_data(data) {
+    return data.split("\n").map(line => {
+        const data = line.split(" ")
+        const d = new Date(0);
+        d.setUTCSeconds(data[1]);
+        return {x: d, y: parseInt(data[0])}
+    })
+}
+
+const lars_data_array = split_data(lars_data)
+const constantin_data_array = split_data(constantin_data)
 const lars_last_value = lars_data_array[lars_data_array.length - 2]["y"]
 const constantin_last_value = constantin_data_array[constantin_data_array.length - 2]["y"]
 
@@ -79,6 +78,7 @@ export const options = {
         y: {
             type: 'linear',
             display: true,
+            beginAtZero: true,
             position: 'left',
             grid: {
                 color: "rgba(120,120,120,0.5)"
@@ -138,7 +138,7 @@ export function App() {
     return (
         <header className="App-header">
             <Line className="chart" options={options} data={data}/>
-            <div>Aktuell Erster: {(lars_last_value < constantin_last_value) ? "l.kaesberg" : "c.dalinghaus"}</div>
+            <div>Aktuell Erster: {(lars_last_value > constantin_last_value) ? "l.kaesberg" : "c.dalinghaus"}</div>
             <div>Vorsprung: {Math.abs(lars_last_value - constantin_last_value)} Punkte</div>
         </header>
     );
