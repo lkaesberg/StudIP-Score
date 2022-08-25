@@ -47,7 +47,7 @@ const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 export const options = {
     responsive: true,
     interaction: {
-        mode: 'index',
+        mode: 'x',
         intersect: false,
     },
     stacked: false,
@@ -134,7 +134,9 @@ export function App() {
     return (
         <header className="App-header">
             <Line className="chart" options={options} data={data}/>
-            <div>Aktuell Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)</div>
+            <div>Aktuell
+                Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)
+            </div>
         </header>
     );
 }
