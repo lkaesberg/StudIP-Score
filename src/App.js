@@ -38,7 +38,7 @@ function split_data(data) {
     })
 }
 
-const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01"]
+const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
 const users_colors = [[255, 99, 132], [255, 132, 99], [99, 255, 132], [132, 99, 255]]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
 const user_data_array = user_data.map(data => split_data(data))
@@ -130,8 +130,8 @@ export const data = {
                 label: users[i],
                 color: "white",
                 data: user_data_array[i],
-                backgroundColor: `rgba(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]}, 0.5)`,
-                borderColor: `rgb(${users_colors[i][0]}, ${users_colors[i][1]}, ${users_colors[i][2]})`,
+                backgroundColor: stc(users[i] + "green") + "80",
+                borderColor: stc(users[i] + "green"),
             })
         )
     ,
@@ -141,9 +141,15 @@ export function App() {
     return (
         <header className="App-header">
             <Line className="chart" options={options} data={data}/>
+            <br/>
             <div>Aktuell
                 Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)
             </div>
+            <br/>
+            {[...user_last_value].sort((a, b) => (b - a)).map(value =>
+                <div>{users[user_last_value.indexOf(value)]} ({(value)} Punkte)
+                </div>)}
+
         </header>
     );
 }
