@@ -83,7 +83,6 @@ export const options = {
         y: {
             type: 'linear',
             display: true,
-            beginAtZero: true,
             position: 'left',
             grid: {
                 color: "rgba(120,120,120,0.5)"
