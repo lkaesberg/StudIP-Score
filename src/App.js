@@ -98,9 +98,9 @@ export const options = {
         x: {
             type: 'time',
             time: {
-                unit: 'hour',
+                unit: 'day',
                 displayFormats: {
-                    'hour': 'HH:mm'
+                    'hour': 'dd.MM.yyyy'
                 }, tooltipFormat: "dd.MM.yyyy HH:mm"
             },
             display: true,
