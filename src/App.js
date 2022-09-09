@@ -38,7 +38,7 @@ function split_data(data) {
 
 const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
-const user_data_array = user_data.map(data => split_data(data).filter((_, i) => i<50))
+const user_data_array = user_data.map(data => split_data(data).filter((_, i, array) => i%Math.ceil(array.length / 100) == 0 || i == array.length -1))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 
 
