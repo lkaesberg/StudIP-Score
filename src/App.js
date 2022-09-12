@@ -60,8 +60,8 @@ export default function useWindowDimensions() {
 
     return windowDimensions;
 }
-const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
-const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
+const users = [["l.kaesberg", true], ["c.dalinghaus", true], ["s.kampen", true], ["niklas.bauer01", true], ["hbrosen", true], ["jannisemil.borutta", false]]
+const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user[0]}.log`).text())
 const user_data_array = user_data.map(data => split_data(data))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 
@@ -175,11 +175,12 @@ export function App() {
     const data = {
         datasets:
             [...Array(users.length).keys()].map(i => ({
-                    label: users[i],
+                    label: users[i][0],
                     color: "white",
                     data: user_data_array[i].filter((_, i, array) => i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0 || i === array.length - 1),
                     backgroundColor: stc(users[i] + "green") + "80",
                     borderColor: stc(users[i] + "green"),
+                    hidden: !users[i][1]
                 })
             )
         ,
@@ -187,19 +188,21 @@ export function App() {
     const chartRef = useRef(null);
     return (
         <header className="App-header">
-            <Line ref={chartRef} className="chart" options={options} data={data} />
+            <Line ref={chartRef} className="chart" options={options} data={data}/>
             <div className={"chart-buttons"}>
-                <Button onClick={() => chartRef.current.resetZoom()} variant="Contained">Reset Zoom</Button>
+                <Button onClick={() => {
+                    chartRef.current.resetZoom()
+                    setZoomLevel(1)
+                }} variant="Contained">Reset Zoom</Button>
             </div>
             <br/>
             <div>Aktuell
-                Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)
+                Erster: {users.filter((_, i) => users[i][1])[user_last_value.filter((_, i) => users[i][1]).indexOf(Math.max(...user_last_value.filter((_, i) => users[i][1])))]} ({Math.max(...user_last_value.filter((_, i) => users[i][1]))} Punkte)
             </div>
             <br/>
-            {[...user_last_value].sort((a, b) => (b - a)).map(value =>
+            {[...user_last_value].filter((_, i) => users[i][1]).sort((a, b) => (b - a)).map(value =>
                 <div>{users[user_last_value.indexOf(value)]} ({(value)} Punkte)
                 </div>)}
-
         </header>
     );
 }
