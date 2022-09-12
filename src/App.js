@@ -10,9 +10,9 @@ import {
     LineElement,
     Title,
     Tooltip,
-    Legend, Chart,
+    Legend,
 } from 'chart.js';
-import zoomPlugin, {resetZoom} from 'chartjs-plugin-zoom';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import {Line} from 'react-chartjs-2';
 import {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
@@ -34,9 +34,7 @@ const fetch = require('sync-fetch')
 function split_data(data) {
     return data.split("\n").map(line => {
         const data = line.split(" ")
-        const d = new Date(0);
-        d.setUTCSeconds(data[1]);
-        return {x: d, y: parseInt(data[0])}
+        return {x: parseInt(data[1]) * 1000, y: parseInt(data[0])}
     })
 }
 
@@ -64,12 +62,13 @@ export default function useWindowDimensions() {
 }
 const users = ["l.kaesberg", "c.dalinghaus", "s.kampen", "niklas.bauer01", "hbrosen"]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user}.log`).text())
-const user_data_array = user_data.map(data => split_data(data).filter((_, i, array) => i % Math.ceil(array.length / 100) === 0 || i === array.length - 1))
+const user_data_array = user_data.map(data => split_data(data))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
 
 
 export const options = {
     responsive: true,
+    parsing: false,
     maintainAspectRatio: false,
     interaction: {
         mode: "nearest",
@@ -93,10 +92,20 @@ export const options = {
         zoom: {
             zoom: {
                 drag: {
-                    enabled: true
+                    enabled: true,
+
                 },
                 mode: 'x',
+                onZoomComplete: (ctx) => {
+                    console.log(ctx.chart)
+                    alert(ctx.chart.getZoomLevel())
+                }
             },
+        },
+        decimation: {
+            enabled: true,
+            algorithm: 'lttb',
+            samples: 10
         },
         legend: {
             display: true,
@@ -149,30 +158,36 @@ export const options = {
             color: "rgba(120,120,120,0.5)",
             ticks: {
                 color: "white"
-            }
+            },
+            maxRotation: 0,
+            autoSkip: true
         },
     },
 };
 
 
-export const data = {
-    datasets:
-        [...Array(users.length).keys()].map(i => ({
-                label: users[i],
-                color: "white",
-                data: user_data_array[i],
-                backgroundColor: stc(users[i] + "green") + "80",
-                borderColor: stc(users[i] + "green"),
-            })
-        )
-    ,
-};
-
 export function App() {
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const windowDimensions = useWindowDimensions()
+    options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
+        setZoomLevel(ctx.chart.getZoomLevel())
+    }
+    const data = {
+        datasets:
+            [...Array(users.length).keys()].map(i => ({
+                    label: users[i],
+                    color: "white",
+                    data: user_data_array[i].filter((_, i, array) => i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0 || i === array.length - 1),
+                    backgroundColor: stc(users[i] + "green") + "80",
+                    borderColor: stc(users[i] + "green"),
+                })
+            )
+        ,
+    };
     const chartRef = useRef(null);
     return (
         <header className="App-header">
-            <Line ref={chartRef} className="chart" options={options} data={data}/>
+            <Line ref={chartRef} className="chart" options={options} data={data} />
             <div className={"chart-buttons"}>
                 <Button onClick={() => chartRef.current.resetZoom()} variant="Contained">Reset Zoom</Button>
             </div>
