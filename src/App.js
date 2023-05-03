@@ -177,7 +177,7 @@ export function App() {
             [...Array(users.length).keys()].map(i => ({
                     label: users[i][0],
                     color: "white",
-                    data: user_data_array[i].filter((_, i, array) => (i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === 0)),
+                    data: user_data_array[i].filter((_, i, array) => (i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length)),
                     backgroundColor: stc(users[i] + "green") + "80",
                     borderColor: stc(users[i] + "green"),
                     hidden: !users[i][1]
