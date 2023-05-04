@@ -173,7 +173,7 @@ export function App() {
         setZoomLevel(ctx.chart.getZoomLevel())
     }
     console.log(user_data_array[0])
-    const data_window = user_data_array.foreach((user_data_array_person) => user_data_array_person.filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))))
+    const data_window = user_data_array.forEach((user_data_array_person) => user_data_array_person.filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))))
     const data = {
         datasets:
             [...Array(users.length).keys()].map(i => ({
