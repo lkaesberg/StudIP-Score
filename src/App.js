@@ -71,7 +71,7 @@ export const options = {
     parsing: false,
     maintainAspectRatio: false,
     interaction: {
-        mode: "nearest",
+        mode: "x",
         axis: "x",
         intersect: false,
     },
@@ -172,12 +172,13 @@ export function App() {
     options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
         setZoomLevel(ctx.chart.getZoomLevel())
     }
+    console.log(user_data_array[0])
     const data = {
         datasets:
             [...Array(users.length).keys()].map(i => ({
                     label: users[i][0],
                     color: "white",
-                    data: user_data_array[i].filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === 0))),
+                    data: user_data_array[i].filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))),
                     backgroundColor: stc(users[i] + "green") + "80",
                     borderColor: stc(users[i] + "green"),
                     hidden: !users[i][1]
