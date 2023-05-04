@@ -168,12 +168,12 @@ export const options = {
 
 export function App() {
     const [zoomLevel, setZoomLevel] = useState(1);
+
     const windowDimensions = useWindowDimensions()
     options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
         setZoomLevel(ctx.chart.getZoomLevel())
     }
-    console.log(user_data_array[0])
-    const data_window = user_data_array.forEach((user_data_array_person) => user_data_array_person.filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))))
+    const data_window = user_data_array.map((user_data_array_person) => user_data_array_person.filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))))
     const data = {
         datasets:
             [...Array(users.length).keys()].map(i => ({
@@ -199,12 +199,15 @@ export function App() {
             </div>
             <br/>
             <div>Aktuell
-                Erster: {users.filter((_, i) => users[i][1])[user_last_value.filter((_, i) => users[i][1]).indexOf(Math.max(...user_last_value.filter((_, i) => users[i][1])))]} ({Math.max(...user_last_value.filter((_, i) => users[i][1]))} Punkte)
+                Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)
             </div>
             <br/>
-            {[...user_last_value].filter((_, i) => users[i][1]).sort((a, b) => (b - a)).map(value =>
-                <div>{users[user_last_value.indexOf(value)]} ({(value)} Punkte)
-                </div>)}
+            {[...user_last_value].sort((a, b) => (b - a)).map(value => {
+                const index = user_last_value.indexOf(value)
+                return (
+                    <div>{users[index]} ({(value)} Punkte)
+                    </div>)
+            })}
         </header>
     );
 }
