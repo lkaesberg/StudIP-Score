@@ -240,12 +240,11 @@ export function App() {
                                         <span className="username">{users[index][0]}</span>
                                         <span className="points">{value}</span>
                                         <span className="difference">
-                    {pointDifferences[index] && (
-                        <span className="difference-value">
+                        <span className="difference-value"
+                              style={{color: (pointDifferences[index] >= 0 ? "green" : "red")}}>
                         ({pointDifferences[index] > 0 ? '+' : ''}
                             {pointDifferences[index]})
                       </span>
-                    )}
                   </span>
                                     </li>
                                 );

@@ -93,7 +93,10 @@
 .leaderboard li {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    padding: 7px;
+    margin-bottom: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
 }
 
 .leaderboard .position {
@@ -103,6 +106,9 @@
 
 .leaderboard .username {
     margin-right: 10px;
+}
+.leaderboard .points {
+    color: slategray;
 }
 
 .leaderboard .difference {
