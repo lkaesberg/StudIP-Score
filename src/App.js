@@ -79,6 +79,11 @@ export const options = {
     stacked: false,
     plugins: {
         zoom: {
+            pan: {
+                mode: 'x',
+                enabled: true,
+                modifierKey: "ctrl"
+            },
             zoom: {
                 pinch: {
                     enabled: true
@@ -166,7 +171,7 @@ export function App() {
     const [pointDifferences, setPointDifferences] = useState([]);
 
     const windowDimensions = useWindowDimensions()
-    options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
+    const calculateDifference = (ctx) => {
         setZoomLevel(ctx.chart.getZoomLevel());
 
         const xScale = ctx.chart.scales.x;
@@ -198,7 +203,15 @@ export function App() {
         });
 
         setPointDifferences(updatedPointDifferences);
+    }
+    options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
+        calculateDifference(ctx)
     };
+
+    options.plugins.zoom.pan.onPanComplete = (ctx) => {
+        calculateDifference(ctx)
+    };
+
     useEffect(() => {
         chartRef.current.resetZoom()
     }, [])
