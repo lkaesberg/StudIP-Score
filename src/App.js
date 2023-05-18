@@ -61,7 +61,7 @@ export default function useWindowDimensions() {
 
     return windowDimensions;
 }
-const users = [["l.kaesberg", true], ["c.dalinghaus", true], ["s.kampen", true], ["niklas.bauer01", true], ["hbrosen", true], ["jannisemil.borutta", false], ["n.sennewald", false]]
+const users = [["l.kaesberg", true], ["c.dalinghaus", true], ["s.kampen", true], ["niklas.bauer01", true], ["hbrosen", true], ["jannisemil.borutta", true], ["n.sennewald", true]]
 const user_data = users.map(user => fetch(`https://gwdg.larskaesberg.de/logs/${user[0]}.log`).text())
 const user_data_array = user_data.map(data => split_data(data))
 const user_last_value = user_data_array.map(data => data[data.length - 2]["y"])
