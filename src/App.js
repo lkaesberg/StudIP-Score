@@ -80,9 +80,15 @@ export const options = {
     plugins: {
         zoom: {
             zoom: {
+                pinch: {
+                    enabled: true
+                },
                 drag: {
                     enabled: true,
 
+                },
+                wheel: {
+                    enabled: false
                 },
                 mode: 'x',
                 onZoomComplete: (ctx) => {
