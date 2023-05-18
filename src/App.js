@@ -16,6 +16,7 @@ import zoomPlugin from 'chartjs-plugin-zoom';
 import {Line} from 'react-chartjs-2';
 import {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
+import {valueOrDefault} from "chart.js/helpers";
 
 ChartJS.register(
     CategoryScale,
@@ -77,18 +78,6 @@ export const options = {
     },
     stacked: false,
     plugins: {
-        title: {
-            display: true,
-            text: 'StudIP - Score',
-            padding: {
-                top: 10,
-                bottom: 30
-            },
-            font: {
-                size: 30
-            },
-            color: "white"
-        },
         zoom: {
             zoom: {
                 drag: {
@@ -168,11 +157,45 @@ export const options = {
 
 export function App() {
     const [zoomLevel, setZoomLevel] = useState(1);
+    const [pointDifferences, setPointDifferences] = useState([]);
 
     const windowDimensions = useWindowDimensions()
     options.plugins.zoom.zoom.onZoomComplete = (ctx) => {
-        setZoomLevel(ctx.chart.getZoomLevel())
-    }
+        setZoomLevel(ctx.chart.getZoomLevel());
+
+        const xScale = ctx.chart.scales.x;
+        const visiblePoints = [];
+
+        ctx.chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const data = dataset.data;
+            const minIndex = data.findIndex((value) => value.x > xScale.min)
+            let maxIndex = data.findIndex((value) => value.x > xScale.max)
+            if (maxIndex === -1) maxIndex = data.length - 2;
+            if (minIndex <= maxIndex) {
+                const visibleData = data.slice(minIndex, maxIndex + 1);
+                visiblePoints[datasetIndex] = {
+                    firstValue: visibleData[0]?.y,
+                    lastValue: visibleData[visibleData.length - 1]?.y,
+                };
+            } else {
+                visiblePoints[datasetIndex] = null;
+            }
+        });
+
+        const updatedPointDifferences = user_data_array.map((user_data_array_person, index) => {
+            const points = visiblePoints[index];
+            if (points) {
+                return points.lastValue - points.firstValue;
+            } else {
+                return null;
+            }
+        });
+
+        setPointDifferences(updatedPointDifferences);
+    };
+    useEffect(() => {
+        chartRef.current.resetZoom()
+    }, [])
     const data_window = user_data_array.map((user_data_array_person) => user_data_array_person.filter((_, i, array) => ((i % Math.ceil(array.length / (zoomLevel * 100 * (windowDimensions.width / 1300))) === 0) || (i === array.length - 2))))
     const data = {
         datasets:
@@ -190,24 +213,46 @@ export function App() {
     const chartRef = useRef(null);
     return (
         <header className="App-header">
-            <Line ref={chartRef} className="chart" options={options} data={data}/>
-            <div className={"chart-buttons"}>
-                <Button onClick={() => {
-                    chartRef.current.resetZoom()
-                    setZoomLevel(1)
-                }} variant="Contained">Reset Zoom</Button>
+            <h1>StudIP - Score</h1>
+            <div className="content-container">
+                <div className="chart-container">
+                    <Line ref={chartRef} className="chart" options={options} data={data}/>
+                    <Button
+                        onClick={() => {
+                            chartRef.current.resetZoom();
+                            setZoomLevel(1);
+                        }}
+                        variant="Contained"
+                    >
+                        Reset Zoom
+                    </Button>
+                </div>
+                <div className="leaderboard">
+                    <h2>Leaderboard</h2>
+                    <ul>
+                        {[...user_last_value]
+                            .sort((a, b) => b - a)
+                            .map((value, place) => {
+                                const index = user_last_value.indexOf(value);
+                                return (
+                                    <li key={index} className={place === 0 ? 'highlighted' : ''}>
+                                        <span className="position">{place + 1}</span>
+                                        <span className="username">{users[index][0]}</span>
+                                        <span className="points">{value}</span>
+                                        <span className="difference">
+                    {pointDifferences[index] && (
+                        <span className="difference-value">
+                        ({pointDifferences[index] > 0 ? '+' : ''}
+                            {pointDifferences[index]})
+                      </span>
+                    )}
+                  </span>
+                                    </li>
+                                );
+                            })}
+                    </ul>
+                </div>
             </div>
-            <br/>
-            <div>Aktuell
-                Erster: {users[user_last_value.indexOf(Math.max(...user_last_value))]} ({Math.max(...user_last_value)} Punkte)
-            </div>
-            <br/>
-            {[...user_last_value].sort((a, b) => (b - a)).map(value => {
-                const index = user_last_value.indexOf(value)
-                return (
-                    <div>{users[index]} ({(value)} Punkte)
-                    </div>)
-            })}
         </header>
     );
 }
